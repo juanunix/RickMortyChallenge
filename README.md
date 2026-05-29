@@ -78,3 +78,16 @@ This project was developed and audited using state-of-the-art agentic coding too
 1. **Antigravity CLI (DeepMind AI Pair Programmer):** The entire application structure, migrations, and clean architectural refactoring were pair-programmed using the Antigravity CLI, Google DeepMind's advanced agentic developer.
 2. **Official Android Architecture Skills:** All architectural models, Koin DI bindings, MVI workflows, and type-safe navigation pipelines were built in strict compliance with official Android architecture and presentation guidelines.
 3. **Android CLI:** Project compilation, validation tests, and dependency graph checks were orchestrated locally using the Android command line utilities.
+
+---
+
+## 💡 Future Roadmaps & Potential Improvements
+
+To scale this application into a commercial-grade product, the following future roadmap items could be integrated:
+
+1. **Offline-First Support (Room + RemoteMediator):** Cache characters locally in a Room database using Paging 3's `RemoteMediator` to serve as a Single Source of Truth, enabling full offline navigation.
+2. **Compose Shared Element Transitions:** Animate character images (`AsyncImage`) seamlessly when navigating between list and details screens to provide a premium, smooth visual UX.
+3. **Skeletal Shimmer Loading:** Replace default progress indicators with custom skeletons mimicking cards layout while downloading network data.
+4. **Dynamic Search Bar:** Add `CharacterAction.OnSearchQueryChange(query)` to filter Paging 3 query flows reactively in real time.
+5. **Multi-Pane Adaptive Layouts:** Support large screens, table landscapes, and foldables by showcasing a List-Detail split layout using Compose Window Size Classes.
+6. **Linting and Format Checkers:** Configure detekt and ktlint within Gradle to automate static code analysis and codebase format checks.
