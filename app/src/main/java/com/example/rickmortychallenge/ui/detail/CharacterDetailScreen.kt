@@ -1,6 +1,7 @@
 package com.example.rickmortychallenge.ui.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,6 +48,9 @@ import coil.compose.AsyncImage
 import com.example.rickmortychallenge.domain.model.Character
 import com.example.rickmortychallenge.ui.components.ErrorScreen
 import com.example.rickmortychallenge.ui.components.LoadingScreen
+import org.koin.androidx.compose.koinViewModel
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.rickmortychallenge.theme.RickMortyChallengeTheme
 import org.koin.androidx.compose.koinViewModel
 
 // Composable Root split: handles dependency injection via koinViewModel() and load trigger
@@ -202,7 +206,20 @@ fun DetailContent(
                 DetailItem(label = "Gender", value = character.gender)
                 DetailItem(label = "Type", value = character.type.ifEmpty { "None" })
                 DetailItem(label = "Created At", value = character.created)
-                DetailItem(label = "Profile URL", value = character.url)
+                
+                val context = androidx.compose.ui.platform.LocalContext.current
+                DetailItem(
+                    label = "Profile URL", 
+                    value = character.url,
+                    onClick = {
+                        try {
+                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(character.url))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            // Safe fallback
+                        }
+                    }
+                )
             }
         }
     }
@@ -212,12 +229,20 @@ fun DetailContent(
 fun DetailItem(
     label: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
+            .let {
+                if (onClick != null) {
+                    it.clickable { onClick() }
+                } else {
+                    it
+                }
+            }
     ) {
         Text(
             text = label,
@@ -230,7 +255,60 @@ fun DetailItem(
             text = value,
             fontSize = 16.sp,
             fontWeight = FontWeight.Normal,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = if (onClick != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            style = if (onClick != null) androidx.compose.ui.text.TextStyle(
+                textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
+            ) else androidx.compose.ui.text.TextStyle.Default
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Detail Screen - Loading State")
+@Composable
+private fun CharacterDetailScreenLoadingPreview() {
+    RickMortyChallengeTheme {
+        CharacterDetailScreen(
+            state = DetailState.Loading,
+            onAction = {},
+            onBackClick = {},
+            characterId = 1
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Detail Screen - Success State")
+@Composable
+private fun CharacterDetailScreenSuccessPreview() {
+    val mockCharacter = Character(
+        id = 1,
+        name = "Rick Sanchez",
+        status = "Alive",
+        species = "Human",
+        type = "Scientist",
+        gender = "Male",
+        image = "",
+        url = "https://rickandmortyapi.com/api/character/1",
+        created = "2017-11-04T18:48:46.250Z"
+    )
+    RickMortyChallengeTheme {
+        CharacterDetailScreen(
+            state = DetailState.Success(mockCharacter),
+            onAction = {},
+            onBackClick = {},
+            characterId = 1
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Detail Screen - Error State")
+@Composable
+private fun CharacterDetailScreenErrorPreview() {
+    RickMortyChallengeTheme {
+        CharacterDetailScreen(
+            state = DetailState.Error("Unable to load character details. Please check your internet connection."),
+            onAction = {},
+            onBackClick = {},
+            characterId = 1
         )
     }
 }
