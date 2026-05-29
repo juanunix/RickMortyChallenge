@@ -83,6 +83,40 @@ The application boasts a premium, high-fidelity **Modern Sci-Fi with a "Portal" 
 
 ---
 
+## 📱 Application Versions & Visual Previews
+
+This project is divided into two distinct versions, allowing you to easily view and test different levels of visual high-fidelity and presentation mechanics:
+
+### 1. 🟢 Simple Version (Active on `develop` branch)
+A high-fidelity layout representing the clean, robust implementation of the **Dimension C-137** dark sci-fi design system:
+*   Three-tier typography mapping (**Space Grotesk** for headlines, **Inter** for body, and **JetBrains Mono** for metadata).
+*   Level 0 background (`#101416`) and Level 1 Surface Cards (`#202329`) with a 1px border.
+*   Radioactive status chip indicators (translucent backgrounds + solid glowing dots).
+*   Custom swirling canvas-drawn **Portal Loader** and soft neon diffused outer glows (`Modifier.portalGlow`).
+
+---
+
+### 🚀 🔵 Pro Version (Active on `feature/pro` branch)
+A premium layout inspired directly by advanced design mockups, adding several interactive features and UI enhancements:
+*   **Technical Spec Search Bar:** A fully custom-styled search input field featuring active Sci-fi Blue focus rings and search query debounce.
+*   **Horizontal Species Filter Chips:** Interactive horizontal scrolling chips to filter the Paging 3 listing dynamically by species (`All`, `Human`, `Alien`, `Poopybutthole`).
+*   **Chevron Navigational Indicators:** Horizontal chevron arrow markers integrated into the list cards to highlight row actions.
+*   **Adaptive Bottom Navigation Bar:** A premium navigation dock with custom icons for *Characters*, *Locations*, and *Episodes*, matching the visual structure of interdimensional readouts.
+*   **Technical Spec Avatar & Detail Layout:** Features a large circular image avatar with soft radial Portal Green glows, spec information row lists, recent episodes feeds with chevrons, and custom bottom nav docks.
+*   **Adaptive Swirling Launcher Icon:** A custom dark-space launcher icon layered with technical radar background rings and a glowing green/blue portal swirl vector drawable.
+
+---
+
+### 📸 Visual Previews
+
+Here is the visual high-fidelity mapping of the two versions:
+
+| 📱 Version Home List (Pro Features) | 📱 Character Spec Detail (Pro Layout) |
+| :---: | :---: |
+| ![Pro Home List](images/homelist.png) | ![Pro Character Detail](images/screenshot_detail.png) |
+
+---
+
 ## 🚀 How to Run & Verify
 
 ### Compilation & Run:
