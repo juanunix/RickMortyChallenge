@@ -117,7 +117,7 @@ fun CharacterListScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "DIMENSION C-137 //",
+                        text = "Rick & Morty Characters",
                         fontFamily = SpaceGroteskFontFamily,
                         fontWeight = FontWeight.Bold,
                         color = Primary
