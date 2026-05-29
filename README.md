@@ -55,6 +55,31 @@ The repository is built strictly around the **GitFlow** branching model, with ea
 - **`feature/unit-testing`:** Decoupled ViewModel unit test cases.
 - **`feature/show-detail-url`:** Interactive clickable profile hyperlinks in character details.
 - **`feature/composable-previews`:** Exhaustive Compose Previews mapping out Loading, Success, and Error states.
+- **`feature/design-system-dimension-c137`:** Integrates the custom "Dimension C-137" premium dark sci-fi design system.
+
+---
+
+## 🎨 🧪 Dimension C-137 Design System
+
+The application boasts a premium, high-fidelity **Modern Sci-Fi with a "Portal" twist** theme. It bridges high-utility technical precision with chaotic cosmic aesthetics:
+
+*   **Colors & void layering:**
+    *   `Level 0 Background`: `#101416` (Void deep space)
+    *   `Level 1 Surfaces/Cards`: `#202329` (Scientific readout framing)
+    *   `Primary Accent`: `#B2EB65` (Vibrant Radioactive Portal Green)
+    *   `Secondary Accent`: `#4CD8EF` (High-tech Sci-Fi Laboratory Blue)
+*   **Three-tier typography layout:**
+    *   **Space Grotesk (Headlines):** Applied to major screens, top bars, specimen titles, and errors to convey high-concept energy.
+    *   **Inter (Body Text):** Optimal readability descriptions and descriptions.
+    *   **JetBrains Mono (Metadata/Readouts):** Monospaced lettering for technical parameters ("Origin", "Gender", "Mutation Status") to mimic a laboratory terminal.
+*   **Shape definitions:**
+    *   *Standard Elements (Buttons, Fields):* `8dp` (0.5rem) corner radius.
+    *   *Large Elements (Cards, Photo frames):* `16dp` / `24dp` (1rem) corner radius.
+    *   *Chips & Indicators:* Pill-shape fully rounded profiles.
+*   **Chaotic Custom Components:**
+    *   **Portal Loader:** A glowing, swirling canvas-drawn portal vortex using infinite rotate-scale animations, replacing standard progress indicators.
+    *   **Portal Glow Modifier (`Modifier.portalGlow`):** Renders dynamic outer neon shadow boundaries with diffused primary green/secondary blue at 20% opacity.
+    *   **Status Chip indicators:** Character statuses mapped directly to C-137 custom color tags (Translucent backgrounds + solid glowing dots).
 
 ---
 

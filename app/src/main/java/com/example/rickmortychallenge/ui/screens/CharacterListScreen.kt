@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -26,18 +25,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
@@ -45,9 +47,13 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.rickmortychallenge.domain.model.Character
+import com.example.rickmortychallenge.theme.Primary
+import com.example.rickmortychallenge.theme.RickMortyChallengeTheme
+import com.example.rickmortychallenge.theme.SpaceGroteskFontFamily
 import com.example.rickmortychallenge.ui.components.CharacterCard
 import com.example.rickmortychallenge.ui.components.ErrorScreen
 import com.example.rickmortychallenge.ui.components.LoadingScreen
+import com.example.rickmortychallenge.ui.components.PortalLoader
 import com.example.rickmortychallenge.ui.components.StatusFilterChips
 import com.example.rickmortychallenge.ui.viewmodel.CharacterAction
 import com.example.rickmortychallenge.ui.viewmodel.CharacterEvent
@@ -56,8 +62,6 @@ import com.example.rickmortychallenge.ui.viewmodel.CharacterViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.koin.androidx.compose.koinViewModel
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.rickmortychallenge.theme.RickMortyChallengeTheme
 
 @Composable
 fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
@@ -113,13 +117,14 @@ fun CharacterListScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Rick & Morty Characters",
+                        text = "DIMENSION C-137 //",
+                        fontFamily = SpaceGroteskFontFamily,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = Primary
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = Color(0xFF101416) // Cosmic void background
                 )
             )
         },
@@ -133,7 +138,7 @@ fun CharacterListScreen(
                     start = innerPadding.calculateStartPadding(layoutDirection),
                     end = innerPadding.calculateEndPadding(layoutDirection)
                 )
-                .background(MaterialTheme.colorScheme.background)
+                .background(Color(0xFF101416)) // Level 0 background
         ) {
             StatusFilterChips(
                 selectedStatus = state.filterStatus,
@@ -156,7 +161,7 @@ fun CharacterListScreen(
                     pagingItems.loadState.refresh is LoadState.Error && pagingItems.itemCount == 0 -> {
                         val error = (pagingItems.loadState.refresh as LoadState.Error).error
                         ErrorScreen(
-                            message = error.message ?: "Unknown error occurred",
+                            message = error.message ?: "Transmission failed. Let's fire the portal gun again.",
                             onRetry = { pagingItems.retry() }
                         )
                     }
@@ -208,7 +213,12 @@ fun CharacterPagingList(
                             .fillMaxWidth()
                             .clickable { onItemClick(character) }
                     ) {
-                        CharacterCard(character = character)
+                        // Apply glow effect for some featured characters in list
+                        val isFeatured = character.id % 4 == 1
+                        CharacterCard(
+                            character = character,
+                            isFeatured = isFeatured
+                        )
                     }
                 }
             }
@@ -216,11 +226,12 @@ fun CharacterPagingList(
 
         if (pagingItems.loadState.append is LoadState.Loading) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                CircularProgressIndicator(
+                PortalLoader(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .wrapContentWidth(Alignment.CenterHorizontally)
+                        .wrapContentWidth(Alignment.CenterHorizontally),
+                    size = 50.dp
                 )
             }
         }
