@@ -1,8 +1,11 @@
 package com.example.rickmortychallenge.ui.detail
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,12 +24,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -39,8 +52,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -97,13 +112,14 @@ fun CharacterDetailScreen(
     modifier: Modifier = Modifier
 ) {
     val layoutDirection = LocalLayoutDirection.current
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { 
                     Text(
-                        text = "CHARACTER ANALYSIS //", 
+                        text = "Character Details", 
                         fontFamily = SpaceGroteskFontFamily,
                         fontWeight = FontWeight.Bold,
                         color = Primary
@@ -118,10 +134,61 @@ fun CharacterDetailScreen(
                         )
                     }
                 },
+                actions = {
+                    IconButton(onClick = { Toast.makeText(context, "More analysis specs classified", Toast.LENGTH_SHORT).show() }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More Options",
+                            tint = Primary
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF101416)
+                    containerColor = Color(0xEC101416) // surface background with glass opacity
                 )
             )
+        },
+        bottomBar = {
+            // Pill-shaped Bottom Navigation Bar matching the list screen pro
+            NavigationBar(
+                containerColor = Color(0xFF1C2022), // surface-container
+                tonalElevation = 8.dp,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            ) {
+                NavigationBarItem(
+                    selected = true,
+                    onClick = { onBackClick() }, // Return back to list
+                    icon = { Icon(Icons.Default.Group, contentDescription = "Characters") },
+                    label = { Text("Characters", style = MaterialTheme.typography.labelSmall) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFF101416),
+                        selectedTextColor = Primary,
+                        indicatorColor = Primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { Toast.makeText(context, "Locations portal offline", Toast.LENGTH_SHORT).show() },
+                    icon = { Icon(Icons.Default.Public, contentDescription = "Locations") },
+                    label = { Text("Locations", style = MaterialTheme.typography.labelSmall) },
+                    colors = NavigationBarItemDefaults.colors(
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { Toast.makeText(context, "Episodes portal offline", Toast.LENGTH_SHORT).show() },
+                    icon = { Icon(Icons.Default.Movie, contentDescription = "Episodes") },
+                    label = { Text("Episodes", style = MaterialTheme.typography.labelSmall) },
+                    colors = NavigationBarItemDefaults.colors(
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            }
         },
         modifier = modifier
     ) { innerPadding ->
@@ -162,171 +229,327 @@ fun DetailContent(
         else -> StatusUnknownDot to StatusUnknownBg
     }
 
+    // Dynamic mock fields customized based on character details for ultra fidelity
+    val originPlanet = when (character.id) {
+        1 -> "Earth (C-137)"
+        2 -> "Earth (C-137)"
+        3 -> "Earth (Replacement Dimension)"
+        4 -> "Earth (Replacement Dimension)"
+        else -> "Classified Space Quadrant"
+    }
+
+    val characterBio = when (character.id) {
+        1 -> "The smartest man in the universe. Rick is an alcoholic genius who drags his grandson Morty on dangerous adventures across the multiverse."
+        2 -> "Rick's good-natured but easily distressed 14-year-old grandson. He is frequently dragged into chaotic interdimensional expeditions."
+        3 -> "Morty's 17-year-old sister, Summer is a typical high school teenager who occasionally joins her grandfather on sci-fi escapades."
+        4 -> "Rick's daughter, Morty's mother, and a horse heart surgeon. Beth is ambitious, strong-willed, and deals with complex family dynamics."
+        else -> "Specimen analysis profile. Drags their companions on dangerous adventures across the multiverse."
+    }
+
+    val lastKnownLocation = when (character.id) {
+        1, 2 -> "Citadel of Ricks"
+        3, 4 -> "Earth (Replacement Dimension)"
+        else -> "Unknown Federation Planet"
+    }
+
+    val firstSeenEpisode = when (character.id) {
+        1, 2, 3, 4 -> "Pilot (S01E01)"
+        else -> "Anatomy Park (S01E03)"
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(
-                start = 24.dp,
-                end = 24.dp,
-                top = 16.dp,
+                start = 16.dp,
+                end = 16.dp,
+                top = 8.dp,
                 bottom = 24.dp + bottomPadding
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // High quality photo frame with portal glow
+        // Simplified Header Section: Circular Avatar Image frame with soft border and Portal Glow
         Box(
             modifier = Modifier
-                .padding(8.dp)
-                .portalGlow(
-                    color = Primary,
-                    alpha = 0.25f,
-                    borderRadius = 24.dp,
-                    glowRadius = 16.dp
-                )
+                .size(192.dp)
+                .padding(8.dp),
+            contentAlignment = Alignment.Center
         ) {
+            // Soft Radial Glow
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .portalGlow(
+                        color = Primary,
+                        alpha = 0.20f,
+                        borderRadius = 96.dp,
+                        glowRadius = 16.dp
+                    )
+            )
+
+            // Circular Image with surface container border
             AsyncImage(
                 model = character.image,
                 contentDescription = character.name,
                 modifier = Modifier
-                    .size(220.dp)
-                    .clip(RoundedCornerShape(24.dp)), // Cards & modals corner radius (1rem / 16dp / 24dp)
+                    .fillMaxSize()
+                    .clip(CircleShape)
+                    .background(Color(0xFF1C2022)) // surface-container
+                    .border(4.dp, Color(0xFF1C2022), CircleShape), // border-4 border-surface-container
                 contentScale = ContentScale.Crop
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Character Name in Space Grotesk
+        // Name in Space Grotesk
         Text(
-            text = character.name.uppercase(),
+            text = character.name,
             fontFamily = SpaceGroteskFontFamily,
             fontWeight = FontWeight.Bold,
-            fontSize = 28.sp,
+            fontSize = 32.sp,
             color = MaterialTheme.colorScheme.onBackground,
-            letterSpacing = (-0.01).sp
+            textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        // Subtitle Origin Planet (Inter, Primary tint)
+        Text(
+            text = originPlanet,
+            style = MaterialTheme.typography.bodyLarge,
+            color = Primary.copy(alpha = 0.8f),
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 4.dp)
+        )
 
-        // Status tag (Pill shape rounding)
+        // Row of small Status/Species chips
         Row(
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(statusBgColor)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
+            modifier = Modifier.padding(top = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
+            // Status Chip
+            Row(
                 modifier = Modifier
-                    .size(10.dp)
                     .clip(CircleShape)
-                    .background(statusDotColor)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "${character.status} - ${character.species}",
-                style = MaterialTheme.typography.labelSmall, // Scientific readout
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+                    .background(Primary.copy(alpha = 0.1f))
+                    .border(BorderStroke(1.dp, Primary.copy(alpha = 0.2f)), CircleShape)
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .clip(CircleShape)
+                        .background(statusDotColor)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = character.status.uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 11.sp,
+                    color = Primary,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            // Species Chip
+            Row(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f))
+                    .border(BorderStroke(1.dp, Color(0x1AFFFFFF)), CircleShape)
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = character.species.uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Analysis specs card
-        Card(
+        // Brief Bio description
+        Text(
+            text = characterBio,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            lineHeight = 20.sp,
             modifier = Modifier
                 .fillMaxWidth()
-                .portalGlow(
-                    color = Secondary,
-                    alpha = 0.10f,
-                    borderRadius = 16.dp,
-                    glowRadius = 8.dp
-                ),
+                .padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Information Rows Section
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            InfoRowItem(
+                icon = Icons.Default.LocationOn,
+                iconColor = Primary.copy(alpha = 0.6f),
+                label = "Last Location",
+                value = lastKnownLocation
+            )
+            InfoRowItem(
+                icon = Icons.Default.Movie,
+                iconColor = Secondary.copy(alpha = 0.6f),
+                label = "First Seen In",
+                value = firstSeenEpisode
+            )
+            InfoRowItem(
+                icon = Icons.Default.Science,
+                iconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                label = "Species",
+                value = character.species
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Recent Episodes Section
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Recent Episodes",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "View All",
+                style = MaterialTheme.typography.bodySmall,
+                color = Primary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.clickable { /* View all click */ }
+            )
+        }
+
+        // Episodes List Container
+        Card(
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF202329) // Level 1 surface card
+                containerColor = Color(0xFF181C1E) // surface-container-low
             ),
-            border = BorderStroke(1.dp, Color(0x1AFFFFFF)) // 1px white border at 10% opacity
+            border = BorderStroke(1.dp, Color(0x1AFFFFFF)) // border border-white/5
         ) {
             Column(
-                modifier = Modifier.padding(20.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // Header of readout
-                Text(
-                    text = "SPECIMEN DATA READOUT //",
-                    fontFamily = SpaceGroteskFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp,
-                    color = Secondary,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
-
-                DetailItem(label = "CLASSIFIED GENDER", value = character.gender.uppercase())
-                DetailItem(label = "MUTATION TYPE", value = if (character.type.isEmpty()) "STANDARD" else character.type.uppercase())
-                DetailItem(label = "TEMPORAL CREATION", value = character.created)
-                
-                val context = androidx.compose.ui.platform.LocalContext.current
-                DetailItem(
-                    label = "COSMIC INTERNET PROFILE URL", 
-                    value = character.url,
-                    onClick = {
-                        try {
-                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(character.url))
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            // Safe fallback
-                        }
-                    }
-                )
+                EpisodeListItem(title = "Fear No Mort", code = "S07E10 • Dec 17, 2023")
+                EpisodeListItem(title = "Mort: Dinner Rick-and-Morty", code = "S07E09 • Dec 10, 2023", showDivider = true)
+                EpisodeListItem(title = "Rise of the Numbericons", code = "S07E08 • Dec 3, 2023", showDivider = true)
             }
         }
     }
 }
 
 @Composable
-fun DetailItem(
+fun InfoRowItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    iconColor: Color,
     label: String,
     value: String,
-    modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    modifier: Modifier = Modifier
 ) {
-    Column(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .let {
-                if (onClick != null) {
-                    it.clickable { onClick() }
-                } else {
-                    it
-                }
-            }
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFF1C2022).copy(alpha = 0.4f)) // bg-surface-container/40
+            .border(BorderStroke(1.dp, Color(0x0DFFFFFF)), RoundedCornerShape(12.dp))
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Label using monospaced technical font
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            letterSpacing = 0.05.sp
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        val baseStyle = MaterialTheme.typography.labelSmall.copy(fontSize = 14.sp)
-        val textStyle = if (onClick != null) {
-            baseStyle.copy(textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline)
-        } else {
-            baseStyle
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconColor,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
-
-        // Value using monospaced technical font
         Text(
             text = value,
-            style = textStyle,
-            fontWeight = FontWeight.Normal,
-            color = if (onClick != null) Secondary else MaterialTheme.colorScheme.onSurfaceVariant
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface
         )
+    }
+}
+
+@Composable
+fun EpisodeListItem(
+    title: String,
+    code: String,
+    showDivider: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        if (showDivider) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(Color(0x0DFFFFFF)) // divide-white/5
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { /* Episode detail */ }
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = code,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
 }
 
