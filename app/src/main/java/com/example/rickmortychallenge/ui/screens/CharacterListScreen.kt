@@ -442,3 +442,33 @@ private fun CharacterListScreenSuccessPreview() {
         )
     }
 }
+
+@Preview(showBackground = true, name = "List Screen - Loading State")
+@Composable
+private fun CharacterListScreenLoadingPreview() {
+    RickMortyChallengeTheme {
+        Box(
+            modifier = Modifier
+                .background(Color(0xFF101416))
+                .padding(vertical = 40.dp)
+        ) {
+            LoadingScreen()
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "List Screen - Error State")
+@Composable
+private fun CharacterListScreenErrorPreview() {
+    RickMortyChallengeTheme {
+        Box(
+            modifier = Modifier
+                .background(Color(0xFF101416))
+        ) {
+            ErrorScreen(
+                message = "Unable to connect to interdimensional portal coordinates. Please verify your connection.",
+                onRetry = {}
+            )
+        }
+    }
+}
