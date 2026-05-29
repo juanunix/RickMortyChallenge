@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 
 private class FakeApiService : CharacterApiService {
-    override suspend fun getCharacters(page: Int?, status: String?) = throw NotImplementedError()
+    override suspend fun getCharacters(page: Int?, status: String?, name: String?, species: String?) = throw NotImplementedError()
     override suspend fun getCharacter(id: Int) = throw NotImplementedError()
 }
 

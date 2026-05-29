@@ -5,5 +5,7 @@ sealed interface CharacterAction {
     data object Retry : CharacterAction
     data object Refresh : CharacterAction
     data class FilterByStatus(val status: String?) : CharacterAction
+    data class FilterBySpecies(val species: String?) : CharacterAction
+    data class SearchCharacters(val query: String) : CharacterAction
     data class SelectCharacter(val id: Int) : CharacterAction
 }

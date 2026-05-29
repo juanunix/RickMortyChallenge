@@ -7,5 +7,7 @@ import kotlinx.coroutines.flow.emptyFlow
 
 data class CharacterState(
     val pagingDataFlow: Flow<PagingData<Character>> = emptyFlow(),
-    val filterStatus: String? = null
+    val filterStatus: String? = null,
+    val searchQuery: String = "",
+    val filterSpecies: String? = null
 )

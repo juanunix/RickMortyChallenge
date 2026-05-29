@@ -10,7 +10,9 @@ interface CharacterApiService {
     @GET("character")
     suspend fun getCharacters(
         @Query("page") page: Int? = null,
-        @Query("status") status: String? = null
+        @Query("status") status: String? = null,
+        @Query("name") name: String? = null,
+        @Query("species") species: String? = null
     ): CharacterResponse
 
     @GET("character/{id}")

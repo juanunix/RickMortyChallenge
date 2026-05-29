@@ -6,31 +6,54 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -38,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,6 +73,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.rickmortychallenge.domain.model.Character
 import com.example.rickmortychallenge.theme.Primary
 import com.example.rickmortychallenge.theme.RickMortyChallengeTheme
+import com.example.rickmortychallenge.theme.Secondary
 import com.example.rickmortychallenge.theme.SpaceGroteskFontFamily
 import com.example.rickmortychallenge.ui.components.CharacterCard
 import com.example.rickmortychallenge.ui.components.ErrorScreen
@@ -111,6 +136,7 @@ fun CharacterListScreen(
 ) {
     val pagingItems = state.pagingDataFlow.collectAsLazyPagingItems()
     val layoutDirection = LocalLayoutDirection.current
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -128,6 +154,48 @@ fun CharacterListScreen(
                 )
             )
         },
+        bottomBar = {
+            // Pill-shaped Bottom Navigation Bar styled like the HTML mock
+            NavigationBar(
+                containerColor = Color(0xFF1C2022), // surface-container
+                tonalElevation = 8.dp,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            ) {
+                NavigationBarItem(
+                    selected = true,
+                    onClick = { /* Already on characters list */ },
+                    icon = { Icon(Icons.Default.Group, contentDescription = "Characters") },
+                    label = { Text("Characters", style = MaterialTheme.typography.labelSmall) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFF101416),
+                        selectedTextColor = Primary,
+                        indicatorColor = Primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { Toast.makeText(context, "Locations portal offline", Toast.LENGTH_SHORT).show() },
+                    icon = { Icon(Icons.Default.Public, contentDescription = "Locations") },
+                    label = { Text("Locations", style = MaterialTheme.typography.labelSmall) },
+                    colors = NavigationBarItemDefaults.colors(
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = { Toast.makeText(context, "Episodes portal offline", Toast.LENGTH_SHORT).show() },
+                    icon = { Icon(Icons.Default.Movie, contentDescription = "Episodes") },
+                    label = { Text("Episodes", style = MaterialTheme.typography.labelSmall) },
+                    colors = NavigationBarItemDefaults.colors(
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            }
+        },
         modifier = modifier
     ) { innerPadding ->
         Column(
@@ -140,6 +208,95 @@ fun CharacterListScreen(
                 )
                 .background(Color(0xFF101416)) // Level 0 background
         ) {
+            // Search Input styled like custom Tailwind mockup in HTML
+            TextField(
+                value = state.searchQuery,
+                onValueChange = { query ->
+                    onAction(CharacterAction.SearchCharacters(query))
+                },
+                placeholder = { 
+                    Text(
+                        text = "Search characters...", 
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    ) 
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = if (state.searchQuery.isNotEmpty()) Secondary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFF272B2D), // surface-container-high
+                    unfocusedContainerColor = Color(0xFF1C2022), // surface-container
+                    disabledContainerColor = Color(0xFF1C2022),
+                    focusedIndicatorColor = Secondary, // focus glow ring
+                    unfocusedIndicatorColor = Color.Transparent,
+                    cursorColor = Secondary,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                ),
+                shape = RoundedCornerShape(12.dp),
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
+            // Species Filter Chips Row styled like mockup
+            val speciesList = listOf("Human", "Alien", "Poopybutthole")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = state.filterSpecies == null,
+                    onClick = { onAction(CharacterAction.FilterBySpecies(null)) },
+                    shape = CircleShape, // Pill rounding
+                    label = { Text("ALL CHARACTERS", style = MaterialTheme.typography.labelSmall) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = Primary,
+                        selectedLabelColor = Color(0xFF101416),
+                        containerColor = Color(0xFF202329),
+                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        borderColor = Color(0x1AFFFFFF),
+                        selectedBorderColor = Primary,
+                        enabled = true,
+                        selected = state.filterSpecies == null
+                    )
+                )
+
+                speciesList.forEach { species ->
+                    val isSelected = state.filterSpecies?.lowercase() == species.lowercase()
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { onAction(CharacterAction.FilterBySpecies(species)) },
+                        shape = CircleShape,
+                        label = { Text(species.uppercase(), style = MaterialTheme.typography.labelSmall) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = Primary,
+                            selectedLabelColor = Color(0xFF101416),
+                            containerColor = Color(0xFF202329),
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            borderColor = Color(0x1AFFFFFF),
+                            selectedBorderColor = Primary,
+                            enabled = true,
+                            selected = isSelected
+                        )
+                    )
+                }
+            }
+
+            // Status Filter Chips as secondary filter layout
             StatusFilterChips(
                 selectedStatus = state.filterStatus,
                 onStatusSelected = { status ->
@@ -213,7 +370,6 @@ fun CharacterPagingList(
                             .fillMaxWidth()
                             .clickable { onItemClick(character) }
                     ) {
-                        // Apply glow effect for some featured characters in list
                         val isFeatured = character.id % 4 == 1
                         CharacterCard(
                             character = character,

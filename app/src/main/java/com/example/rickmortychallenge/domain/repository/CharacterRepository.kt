@@ -5,6 +5,10 @@ import com.example.rickmortychallenge.domain.model.Character
 import kotlinx.coroutines.flow.Flow
 
 interface CharacterRepository {
-    fun getCharactersStream(status: String? = null): Flow<PagingData<Character>>
+    fun getCharactersStream(
+        status: String? = null,
+        name: String? = null,
+        species: String? = null
+    ): Flow<PagingData<Character>>
     suspend fun getCharacterDetails(id: Int): Result<Character>
 }
