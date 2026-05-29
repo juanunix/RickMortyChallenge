@@ -49,6 +49,9 @@ import com.example.rickmortychallenge.domain.model.Character
 import com.example.rickmortychallenge.ui.components.ErrorScreen
 import com.example.rickmortychallenge.ui.components.LoadingScreen
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.rickmortychallenge.theme.RickMortyChallengeTheme
+import org.koin.androidx.compose.koinViewModel
 
 // Composable Root split: handles dependency injection via koinViewModel() and load trigger
 @Composable
@@ -256,6 +259,56 @@ fun DetailItem(
             style = if (onClick != null) androidx.compose.ui.text.TextStyle(
                 textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
             ) else androidx.compose.ui.text.TextStyle.Default
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Detail Screen - Loading State")
+@Composable
+private fun CharacterDetailScreenLoadingPreview() {
+    RickMortyChallengeTheme {
+        CharacterDetailScreen(
+            state = DetailState.Loading,
+            onAction = {},
+            onBackClick = {},
+            characterId = 1
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Detail Screen - Success State")
+@Composable
+private fun CharacterDetailScreenSuccessPreview() {
+    val mockCharacter = Character(
+        id = 1,
+        name = "Rick Sanchez",
+        status = "Alive",
+        species = "Human",
+        type = "Scientist",
+        gender = "Male",
+        image = "",
+        url = "https://rickandmortyapi.com/api/character/1",
+        created = "2017-11-04T18:48:46.250Z"
+    )
+    RickMortyChallengeTheme {
+        CharacterDetailScreen(
+            state = DetailState.Success(mockCharacter),
+            onAction = {},
+            onBackClick = {},
+            characterId = 1
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Detail Screen - Error State")
+@Composable
+private fun CharacterDetailScreenErrorPreview() {
+    RickMortyChallengeTheme {
+        CharacterDetailScreen(
+            state = DetailState.Error("Unable to load character details. Please check your internet connection."),
+            onAction = {},
+            onBackClick = {},
+            characterId = 1
         )
     }
 }

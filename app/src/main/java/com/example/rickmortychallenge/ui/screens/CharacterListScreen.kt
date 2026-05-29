@@ -41,6 +41,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.rickmortychallenge.domain.model.Character
@@ -53,7 +54,10 @@ import com.example.rickmortychallenge.ui.viewmodel.CharacterEvent
 import com.example.rickmortychallenge.ui.viewmodel.CharacterState
 import com.example.rickmortychallenge.ui.viewmodel.CharacterViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.rickmortychallenge.theme.RickMortyChallengeTheme
 
 @Composable
 fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
@@ -220,5 +224,54 @@ fun CharacterPagingList(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true, name = "List Screen - Success State")
+@Composable
+private fun CharacterListScreenSuccessPreview() {
+    val mockCharacters = listOf(
+        Character(
+            id = 1,
+            name = "Rick Sanchez",
+            status = "Alive",
+            species = "Human",
+            type = "Scientist",
+            gender = "Male",
+            image = "",
+            url = "",
+            created = ""
+        ),
+        Character(
+            id = 2,
+            name = "Morty Smith",
+            status = "Alive",
+            species = "Human",
+            type = "Student",
+            gender = "Male",
+            image = "",
+            url = "",
+            created = ""
+        ),
+        Character(
+            id = 3,
+            name = "Summer Smith",
+            status = "Alive",
+            species = "Human",
+            type = "None",
+            gender = "Female",
+            image = "",
+            url = "",
+            created = ""
+        )
+    )
+    RickMortyChallengeTheme {
+        CharacterListScreen(
+            state = CharacterState(
+                pagingDataFlow = flowOf(PagingData.from(mockCharacters)),
+                filterStatus = null
+            ),
+            onAction = {}
+        )
     }
 }
