@@ -13,13 +13,17 @@ class NetworkCharacterRepository(
     private val apiService: CharacterApiService
 ) : CharacterRepository {
 
-    override fun getCharactersStream(status: String?): Flow<PagingData<Character>> {
+    override fun getCharactersStream(
+        status: String?,
+        name: String?,
+        species: String?
+    ): Flow<PagingData<Character>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { CharacterPagingSource(apiService, status) }
+            pagingSourceFactory = { CharacterPagingSource(apiService, status, name, species) }
         ).flow
     }
 

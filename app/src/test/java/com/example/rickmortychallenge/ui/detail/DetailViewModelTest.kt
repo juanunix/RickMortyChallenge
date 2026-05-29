@@ -18,7 +18,7 @@ import org.junit.Test
 private class FakeDetailApiService(
     private val shouldThrow: Boolean = false
 ) : CharacterApiService {
-    override suspend fun getCharacters(page: Int?, status: String?) = throw NotImplementedError()
+    override suspend fun getCharacters(page: Int?, status: String?, name: String?, species: String?) = throw NotImplementedError()
     
     override suspend fun getCharacter(id: Int): Character {
         if (shouldThrow) {

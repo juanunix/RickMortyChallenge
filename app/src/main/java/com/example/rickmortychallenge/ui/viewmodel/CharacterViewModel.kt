@@ -32,14 +32,22 @@ class CharacterViewModel(
             is CharacterAction.Retry -> loadCharacters()
             is CharacterAction.Refresh -> loadCharacters()
             is CharacterAction.FilterByStatus -> filterByStatus(action.status)
+            is CharacterAction.FilterBySpecies -> filterBySpecies(action.species)
+            is CharacterAction.SearchCharacters -> searchCharacters(action.query)
             is CharacterAction.SelectCharacter -> selectCharacter(action.id)
         }
     }
 
     private fun loadCharacters() {
-        val currentFilter = _state.value.filterStatus
-        val pagingFlow = repository.getCharactersStream(currentFilter)
-            .cachedIn(viewModelScope)
+        val currentStatus = _state.value.filterStatus
+        val currentQuery = _state.value.searchQuery.trim()
+        val currentSpecies = _state.value.filterSpecies
+        
+        val pagingFlow = repository.getCharactersStream(
+            status = currentStatus,
+            name = if (currentQuery.isEmpty()) null else currentQuery,
+            species = currentSpecies
+        ).cachedIn(viewModelScope)
         
         _state.update {
             it.copy(pagingDataFlow = pagingFlow)
@@ -51,6 +59,24 @@ class CharacterViewModel(
         
         _state.update {
             it.copy(filterStatus = status)
+        }
+        loadCharacters()
+    }
+
+    private fun filterBySpecies(species: String?) {
+        if (_state.value.filterSpecies == species) return
+        
+        _state.update {
+            it.copy(filterSpecies = species)
+        }
+        loadCharacters()
+    }
+
+    private fun searchCharacters(query: String) {
+        if (_state.value.searchQuery == query) return
+        
+        _state.update {
+            it.copy(searchQuery = query)
         }
         loadCharacters()
     }
