@@ -115,6 +115,10 @@ Here is the visual high-fidelity mapping of the two versions:
 | :---: | :---: |
 | ![Pro Home List](images/homelist.png) | ![Pro Character Detail](images/screenshot_detail.png) |
 
+### 🎨 Figma & Stitch Design Project
+You can inspect the interactive design layouts, design system tokens, and screen mockups directly in the Stitch/Figma project workspace:
+🔗 [Stitch with Google - Rick & Morty Project C-137](https://stitch.withgoogle.com/projects/3632098857850379942)
+
 ---
 
 ## 🚀 How to Run & Verify
