@@ -1,5 +1,6 @@
 package com.example.rickmortychallenge.ui.detail
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -40,17 +41,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.rickmortychallenge.domain.model.Character
+import com.example.rickmortychallenge.theme.Primary
+import com.example.rickmortychallenge.theme.RickMortyChallengeTheme
+import com.example.rickmortychallenge.theme.Secondary
+import com.example.rickmortychallenge.theme.SpaceGroteskFontFamily
+import com.example.rickmortychallenge.theme.StatusAliveBg
+import com.example.rickmortychallenge.theme.StatusAliveDot
+import com.example.rickmortychallenge.theme.StatusDeadBg
+import com.example.rickmortychallenge.theme.StatusDeadDot
+import com.example.rickmortychallenge.theme.StatusUnknownBg
+import com.example.rickmortychallenge.theme.StatusUnknownDot
 import com.example.rickmortychallenge.ui.components.ErrorScreen
 import com.example.rickmortychallenge.ui.components.LoadingScreen
-import org.koin.androidx.compose.koinViewModel
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.rickmortychallenge.theme.RickMortyChallengeTheme
+import com.example.rickmortychallenge.ui.components.portalGlow
 import org.koin.androidx.compose.koinViewModel
 
 // Composable Root split: handles dependency injection via koinViewModel() and load trigger
@@ -91,14 +101,25 @@ fun CharacterDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Character Details", fontWeight = FontWeight.Bold) },
+                title = { 
+                    Text(
+                        text = "CHARACTER ANALYSIS //", 
+                        fontFamily = SpaceGroteskFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = Primary
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = "Back",
+                            tint = Primary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = Color(0xFF101416)
                 )
             )
         },
@@ -112,7 +133,7 @@ fun CharacterDetailScreen(
                     start = innerPadding.calculateStartPadding(layoutDirection),
                     end = innerPadding.calculateEndPadding(layoutDirection)
                 )
-                .background(MaterialTheme.colorScheme.background)
+                .background(Color(0xFF101416)) // Level 0 Void background
         ) {
             when (state) {
                 is DetailState.Loading -> LoadingScreen()
@@ -135,10 +156,10 @@ fun DetailContent(
     bottomPadding: Dp,
     modifier: Modifier = Modifier
 ) {
-    val statusColor = when (character.status.lowercase()) {
-        "alive" -> Color(0xFF4CAF50)
-        "dead" -> Color(0xFFF44336)
-        else -> Color(0xFF9E9E9E)
+    val (statusDotColor, statusBgColor) = when (character.status.lowercase()) {
+        "alive" -> StatusAliveDot to StatusAliveBg
+        "dead" -> StatusDeadDot to StatusDeadBg
+        else -> StatusUnknownDot to StatusUnknownBg
     }
 
     Column(
@@ -146,70 +167,109 @@ fun DetailContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(
-                start = 16.dp,
-                end = 16.dp,
+                start = 24.dp,
+                end = 24.dp,
                 top = 16.dp,
-                bottom = 16.dp + bottomPadding
+                bottom = 24.dp + bottomPadding
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AsyncImage(
-            model = character.image,
-            contentDescription = character.name,
+        // High quality photo frame with portal glow
+        Box(
             modifier = Modifier
-                .size(200.dp)
-                .clip(RoundedCornerShape(24.dp)),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = character.name,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+                .padding(8.dp)
+                .portalGlow(
+                    color = Primary,
+                    alpha = 0.25f,
+                    borderRadius = 24.dp,
+                    glowRadius = 16.dp
+                )
         ) {
-            Box(
+            AsyncImage(
+                model = character.image,
+                contentDescription = character.name,
                 modifier = Modifier
-                    .size(14.dp)
-                    .clip(CircleShape)
-                    .background(statusColor)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "${character.status} - ${character.species}",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+                    .size(220.dp)
+                    .clip(RoundedCornerShape(24.dp)), // Cards & modals corner radius (1rem / 16dp / 24dp)
+                contentScale = ContentScale.Crop
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Character Name in Space Grotesk
+        Text(
+            text = character.name.uppercase(),
+            fontFamily = SpaceGroteskFontFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 28.sp,
+            color = MaterialTheme.colorScheme.onBackground,
+            letterSpacing = (-0.01).sp
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Status tag (Pill shape rounding)
+        Row(
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(statusBgColor)
+                .padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(statusDotColor)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "${character.status} - ${character.species}",
+                style = MaterialTheme.typography.labelSmall, // Scientific readout
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Analysis specs card
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .portalGlow(
+                    color = Secondary,
+                    alpha = 0.10f,
+                    borderRadius = 16.dp,
+                    glowRadius = 8.dp
+                ),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            )
+                containerColor = Color(0xFF202329) // Level 1 surface card
+            ),
+            border = BorderStroke(1.dp, Color(0x1AFFFFFF)) // 1px white border at 10% opacity
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(20.dp)
             ) {
-                DetailItem(label = "Gender", value = character.gender)
-                DetailItem(label = "Type", value = character.type.ifEmpty { "None" })
-                DetailItem(label = "Created At", value = character.created)
+                // Header of readout
+                Text(
+                    text = "SPECIMEN DATA READOUT //",
+                    fontFamily = SpaceGroteskFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    color = Secondary,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+
+                DetailItem(label = "CLASSIFIED GENDER", value = character.gender.uppercase())
+                DetailItem(label = "MUTATION TYPE", value = if (character.type.isEmpty()) "STANDARD" else character.type.uppercase())
+                DetailItem(label = "TEMPORAL CREATION", value = character.created)
                 
                 val context = androidx.compose.ui.platform.LocalContext.current
                 DetailItem(
-                    label = "Profile URL", 
+                    label = "COSMIC INTERNET PROFILE URL", 
                     value = character.url,
                     onClick = {
                         try {
@@ -244,21 +304,28 @@ fun DetailItem(
                 }
             }
     ) {
+        // Label using monospaced technical font
         Text(
             text = label,
-            fontSize = 12.sp,
+            style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            letterSpacing = 0.05.sp
         )
         Spacer(modifier = Modifier.height(4.dp))
+        val baseStyle = MaterialTheme.typography.labelSmall.copy(fontSize = 14.sp)
+        val textStyle = if (onClick != null) {
+            baseStyle.copy(textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline)
+        } else {
+            baseStyle
+        }
+
+        // Value using monospaced technical font
         Text(
             text = value,
-            fontSize = 16.sp,
+            style = textStyle,
             fontWeight = FontWeight.Normal,
-            color = if (onClick != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-            style = if (onClick != null) androidx.compose.ui.text.TextStyle(
-                textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline
-            ) else androidx.compose.ui.text.TextStyle.Default
+            color = if (onClick != null) Secondary else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
